@@ -1,0 +1,152 @@
+openapi: 3.1.0
+info:
+  title: Long Running Task Manager
+  description: 
+    API to manage long running tasks.
+    body are binary encoded with crate bitcode.
+    All finished tasks are forgotten after a timelapse defined when created.
+  version: 1.0.0
+paths:
+  /tasks:
+    get:
+      summary: List all tasks
+      description: retrieve all tasks not forgotten.
+      security:
+        - bearerAuth: []
+      responses:
+        200:
+          description: List of tasks
+          content:
+            application/octet-stream:
+              schema:
+                type: array
+                format: bytes
+        401:
+          description: Unknown token.
+        403:
+            description: Invalid Token. Only the token for administrator is accepted.
+    post:
+      summary: Create a new task
+      description: 
+      requestBody:
+        description: Task Struct encoded with bitcode.
+                     Fields uuid, progress, status, tokens will be ignored.
+                     This endpoint is not protected by a token, it is the role of the reverse proxy to do so.
+        content:
+          application/octet-stream:
+            schema:
+                type: array
+                format: bytes
+      security:
+        - bearerAuth: []
+      responses:
+        201:
+          description: Task created
+          headers:
+            Location:
+              schema:
+                type: string
+                format: uri
+            ViewToken:
+              schema:
+                type: string
+            AbortToken:
+              schema:
+                type: string
+            UpdateToken:
+              schema:
+                type: string
+        400:
+          description: Invalid request
+        401:
+          description: Unknown token.
+        403:
+          description: Invalid token. Please provide the token for creation of tasks configured when server started or the admin token.
+  /tasks/{uuid}:
+    get:
+      security:
+        - bearerAuth: []
+      summary: Read task status and progress.
+      description: the body returned will have a encoded by bitcode crate tuple of (progress, status).
+      parameters:
+        - in: query
+          name: uuid
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - in: header
+          name: token
+          required: true
+          schema:
+            type: string
+
+      responses:
+        200:
+          description: Task status and progress
+          content:
+            application/octet-stream:
+              schema:
+                type: array
+                format: bytes
+        401:
+          description: Unknown token.
+        404:
+          description: Task not found
+        403:
+          description: Invalid token. Please provide token view token given when task was created or the admin token.
+    patch:
+      summary: Update task status and progress with token received when creating the task.
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: uuid
+          description: UUID of the task
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        description: body serialized with bitcode crate. Contains a tuple (u8, TaskStatus) where u8 can b 0 to 100 and TaskStatus Active, Aborted, Done.
+        content:
+          application/octet-stream:
+            schema:
+              type: array
+              format: bytes
+      responses:
+        200:
+          description: Task updated
+        400:
+          description: Invalid request
+        401:
+          description: Unknown token.
+        403:
+          description: Invalid token. Please provide token given for updating the task when the task was created or the admin token.
+        404:
+          description: Task not found
+    delete:
+      summary: Abort task
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: query
+          name: uuid
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        200:
+          description: Task aborted
+        400:
+          description: Invalid request
+        401:
+          description: Unknown token.
+        403:
+          description: Invalid token. Please provide token given for deleting the task when the task was created or the admin token.
+components:
+  securitySchemes:
+    bearerAuth:            # arbitrary name for the security scheme
+      type: http
+      scheme: bearer
