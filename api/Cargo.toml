@@ -1,0 +1,20 @@
+[package]
+name = "task-tracker-rs-api"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+tokio = {version="1", default-features= false, features= ["rt-multi-thread"] }
+axum = {version="0.7", default-features= false, features= ["tokio", "http2"] }
+bincode = {version="2.0.0-rc.3", features=["serde"]}
+uuid = {version="1.8", features= ["serde", "v4"], default-features = false }
+clap = {version="4.5.4", default-features=false, features=["std", "derive", "help"]}
+reqwest = {version="0.12.4", default-features= false }
+tasks-tracker-common = {path = "../common"}
+[dev-dependencies]
+# macro feature enabled to get nicer error with #[debug_handler]
+axum = {version="0.7", default-features=false, features=["macros"]}
+axum-test = "14.9"
+
+
+

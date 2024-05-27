@@ -1,10 +1,11 @@
 use bincode::config::Configuration;
-use bincode::Decode;
-use bincode::Encode;
 use std::{
     sync::{Arc, Mutex},
     time::Duration,
 };
+use tasks_tracker_common::NewTask;
+use tasks_tracker_common::Task;
+use tasks_tracker_common::TaskStatus;
 
 use authorize::is_authorized;
 use axum::{
@@ -16,9 +17,7 @@ use axum::{
     Router,
 };
 use clap::Parser;
-use rand::{distributions::Alphanumeric, thread_rng, Rng};
 use tokio::{spawn, time::sleep};
-use url::Url;
 use uuid::Uuid;
 
 mod authorize;
@@ -40,91 +39,6 @@ enum ClientPrivilege {
     Abort(Uuid),
     Update(Uuid),
     List,
-}
-
-// Possible status variant of a task.
-#[derive(Clone, Default, PartialEq, Encode, Decode)]
-enum TaskStatus {
-    // the task has been started and is currently progressing.
-    #[default]
-    Active,
-    // the task has been aborted.
-    Aborted,
-    // the task finished successfully.
-    Done,
-}
-
-#[derive(Clone, Encode)]
-#[cfg_attr(test, derive(Decode))]
-struct Task {
-    // identifier of the task that will be provided when created.
-    // #[serde(skip_deserializing)]
-    #[bincode(with_serde)]
-    id: Uuid,
-    // timelapse after which the task will be discarded.
-    duration: u32,
-    // Name of service creating the task. Information given by client.
-    scope: String,
-    // Name of the task to identify it in a human readable way.
-    name: String,
-    // description of the task
-    description: String,
-    // Progress in % updated by client with progress/status write access. R
-    progress: u8,
-    status: TaskStatus,
-    // Tokens to access the task.
-    // The first is to view progress and status.
-    // Second one is only to change the status to abort.
-    // Third one is to update the progress and status.
-    tokens: (String, String, String),
-    // Url where to send push notifications.
-    // #[bitcode(with_serde)]
-    #[bincode(with_serde)]
-    push_address: Vec<Url>,
-}
-// body that is sent when creating a new task.
-#[derive(Decode)]
-#[cfg_attr(test, derive(Encode))]
-struct NewTask {
-    duration: u32,
-    scope: String,
-    name: String,
-    description: String,
-    #[bincode(with_serde)]
-    push_address: Vec<Url>,
-}
-
-impl NewTask {
-    #[allow(clippy::wrong_self_convention)]
-    fn to_task(self) -> Task {
-        Task {
-            id: Uuid::new_v4(),
-            duration: self.duration,
-            scope: self.scope,
-            name: self.name,
-            description: self.description,
-            progress: 0,
-            status: TaskStatus::Active,
-            tokens: (
-                thread_rng()
-                    .sample_iter(Alphanumeric)
-                    .take(32)
-                    .map(char::from)
-                    .collect(),
-                thread_rng()
-                    .sample_iter(Alphanumeric)
-                    .take(32)
-                    .map(char::from)
-                    .collect(),
-                thread_rng()
-                    .sample_iter(Alphanumeric)
-                    .take(32)
-                    .map(char::from)
-                    .collect(),
-            ),
-            push_address: self.push_address,
-        }
-    }
 }
 
 #[derive(Clone)]
