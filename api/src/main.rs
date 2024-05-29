@@ -142,7 +142,7 @@ async fn create_task(
         (
             StatusCode::CREATED,
             AppendHeaders([
-                ("Location", &endpoint),
+                ("Content-Location", &endpoint),
                 ("ViewToken", &view_key),
                 ("AbortToken", &abort_key),
                 ("UpdateToken", &update_key),
