@@ -1,14 +1,12 @@
 [package]
-name = "tasks-tracker-common"
+name = "client"
 version = "0.1.0"
 edition = "2021"
 
 [dependencies]
 bincode = {version="2.0.0-rc.3", features=["serde"]}
-rand = { default-features = false, version = "0.8", features=["std_rng", "std"] }
 uuid = {version="1.8", features= ["serde", "v4"], default-features = false }
 url = {version="2.5", features=["serde"]}
-
-[features]
-default=[]
-client=[]
+reqwest = {version="0.12.4", default-features= false }
+tasks-tracker-common = {path = "../common", features=["client"]}
+anyhow = "1.0"

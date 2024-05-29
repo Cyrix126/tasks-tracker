@@ -5,6 +5,7 @@ use rand::Rng;
 use url::Url;
 use uuid::Uuid;
 
+pub const BINCODE_CONFIG: bincode::config::Configuration = bincode::config::standard();
 // Possible status variant of a task.
 #[derive(Clone, Default, PartialEq, Encode, Decode)]
 pub enum TaskStatus {
@@ -18,7 +19,7 @@ pub enum TaskStatus {
 }
 
 #[derive(Clone, Encode)]
-#[cfg_attr(test, derive(Decode))]
+#[cfg_attr(feature = "client", derive(Decode))]
 pub struct Task {
     // identifier of the task that will be provided when created.
     // #[serde(skip_deserializing)]
@@ -48,7 +49,7 @@ pub struct Task {
     pub push_address: Vec<Url>,
 }
 #[derive(Decode)]
-#[cfg_attr(test, derive(Encode))]
+#[cfg_attr(feature = "client", derive(Encode))]
 pub struct NewTask {
     pub duration: u32,
     pub scope: String,
