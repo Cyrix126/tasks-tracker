@@ -3,7 +3,8 @@ use reqwest::{
     header::{HeaderValue, AUTHORIZATION, CONTENT_LOCATION},
     Client, Response,
 };
-use tasks_tracker_common::{NewTask, Task, TaskStatus, BINCODE_CONFIG};
+/// re-export for client app
+pub use tasks_tracker_common::{NewTask, Task, TaskStatus, BINCODE_CONFIG};
 use url::Url;
 const ERROR_MSG_HEADER_TO_STR: &str = "Header conversion to str failed";
 pub struct ResponseNewTask {
