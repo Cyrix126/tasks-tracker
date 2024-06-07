@@ -47,6 +47,10 @@ pub struct Task {
     // #[bitcode(with_serde)]
     #[bincode(with_serde)]
     pub push_address: Vec<Url>,
+    // if the tash is finished, a message can be sent to provide a description of the result.
+    pub description_result: String,
+    // a payload can also be set for the result
+    pub payload_result: Vec<u8>,
 }
 #[derive(Decode)]
 #[cfg_attr(feature = "client", derive(Encode))]
@@ -90,6 +94,8 @@ impl NewTask {
                     .collect(),
             ),
             push_address: self.push_address,
+            payload_result: Vec::new(),
+            description_result: String::new()
         }
     }
 }

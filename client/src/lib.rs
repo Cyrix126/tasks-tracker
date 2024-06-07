@@ -107,8 +107,17 @@ pub async fn update_task_progress(
         .error_for_status()?;
     Ok(())
 }
-pub async fn finish_task(client: Client, task_location: Url, token: String) -> Result<()> {
-    let body = bincode::encode_to_vec((100u8, TaskStatus::Done), BINCODE_CONFIG)?;
+pub async fn finish_task(
+    client: Client,
+    task_location: Url,
+    token: String,
+    description_result: Option<String>,
+    payload_result: Vec<u8>,
+) -> Result<()> {
+    let body = bincode::encode_to_vec(
+        (100u8, TaskStatus::Done, description_result, payload_result),
+        BINCODE_CONFIG,
+    )?;
     client
         .post(task_location)
         .header(
@@ -121,8 +130,17 @@ pub async fn finish_task(client: Client, task_location: Url, token: String) -> R
         .error_for_status()?;
     Ok(())
 }
-pub async fn abort_task(client: Client, task_location: Url, token: String) -> Result<()> {
-    let body = bincode::encode_to_vec((0u8, TaskStatus::Aborted), BINCODE_CONFIG)?;
+pub async fn abort_task(
+    client: Client,
+    task_location: Url,
+    token: String,
+    description_result: Option<String>,
+    payload_result: Vec<u8>,
+) -> Result<()> {
+    let body = bincode::encode_to_vec(
+        (0u8, TaskStatus::Aborted, description_result, payload_result),
+        BINCODE_CONFIG,
+    )?;
     client
         .post(task_location)
         .header(

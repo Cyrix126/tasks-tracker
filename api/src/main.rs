@@ -195,10 +195,11 @@ async fn update_task(
         // only one of progress or status can be updated at once.
         // if status is different, progress is ignored.
         // else, only progress is updated.
-        if let Ok(((progress, status), _)) = bincode::decode_from_slice::<
-            (u8, TaskStatus),
-            Configuration,
-        >(&body, state.config_bincode)
+        if let Ok(((progress, status, desc_finished, payload_finished), _)) =
+            bincode::decode_from_slice::<(u8, TaskStatus, Option<String>, Vec<u8>), Configuration>(
+                &body,
+                state.config_bincode,
+            )
         {
             if status == TaskStatus::Done && using_delete {
                 return StatusCode::UNAUTHORIZED.into_response();
@@ -206,6 +207,12 @@ async fn update_task(
             match status {
                 TaskStatus::Done | TaskStatus::Aborted => {
                     // need to update task with new status
+                    if let Some(desc_finished) = desc_finished {
+                        current_task.description_result = desc_finished;
+                    }
+                    if !payload_finished.is_empty() {
+                        current_task.payload_result = payload_finished;
+                    }
                     current_task.status = status;
                     // need to send a request informing that the task is done for each push address.
                     let client = reqwest::Client::new();
