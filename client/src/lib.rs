@@ -4,8 +4,7 @@ use reqwest::{
     Client, Response,
 };
 /// re-export for client app
-pub use tasks_tracker_common;
-use tasks_tracker_common::{NewTask, Task, TaskStatus, BINCODE_CONFIG};
+pub use tasks_tracker_common::{NewTask, Task, TaskStatus, BINCODE_CONFIG};
 use url::Url;
 const ERROR_MSG_HEADER_TO_STR: &str = "Header conversion to str failed";
 pub struct ResponseNewTask {
