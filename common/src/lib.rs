@@ -95,7 +95,7 @@ impl NewTask {
             ),
             push_address: self.push_address,
             payload_result: Vec::new(),
-            description_result: String::new()
+            description_result: String::new(),
         }
     }
 }
