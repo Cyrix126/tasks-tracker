@@ -17,14 +17,14 @@ pub struct ResponseNewTask {
 pub struct ErrorNewTask {}
 
 pub async fn create_task(
-    client: Client,
-    url_tt_api: Url,
-    new_task: NewTask,
-    token: String,
+    client: &Client,
+    url_tt_api: &Url,
+    new_task: &NewTask,
+    token: &str,
 ) -> Result<ResponseNewTask> {
     let body = bincode::encode_to_vec(new_task, BINCODE_CONFIG)?;
     let rep = client
-        .post(url_tt_api)
+        .post(url_tt_api.as_str())
         .header(
             AUTHORIZATION,
             HeaderValue::from_str(&["Bearer ", &token].concat())?,
@@ -44,11 +44,11 @@ pub async fn create_task(
     })
 }
 pub async fn create_simple_task(
-    client: Client,
-    url_tt_api: Url,
+    client: &Client,
+    url_tt_api: &Url,
     task_scope: String,
     task_name: String,
-    token: String,
+    token: &str,
 ) -> Result<ResponseNewTask> {
     let body = bincode::encode_to_vec(
         NewTask {
@@ -62,7 +62,7 @@ pub async fn create_simple_task(
         BINCODE_CONFIG,
     )?;
     let rep = client
-        .post(url_tt_api)
+        .post(url_tt_api.as_str())
         .header(
             AUTHORIZATION,
             HeaderValue::from_str(&["Bearer ", &token].concat())?,
@@ -90,14 +90,14 @@ fn rep_header_string(rep: &Response, key: &str) -> Result<String> {
         .to_string())
 }
 pub async fn update_task_progress(
-    client: Client,
-    task_location: Url,
-    token: String,
+    client: &Client,
+    task_location: &Url,
+    token: &str,
     new_progress: u8,
 ) -> Result<()> {
     let body = bincode::encode_to_vec((new_progress, TaskStatus::Active), BINCODE_CONFIG)?;
     client
-        .post(task_location)
+        .post(task_location.as_str())
         .header(
             AUTHORIZATION,
             HeaderValue::from_str(&["Bearer ", &token].concat())?,
@@ -109,18 +109,18 @@ pub async fn update_task_progress(
     Ok(())
 }
 pub async fn finish_task(
-    client: Client,
-    task_location: Url,
-    token: String,
-    description_result: Option<String>,
-    payload_result: Vec<u8>,
+    client: &Client,
+    task_location: &Url,
+    token: &str,
+    description_result: Option<&str>,
+    payload_result: &[u8],
 ) -> Result<()> {
     let body = bincode::encode_to_vec(
         (100u8, TaskStatus::Done, description_result, payload_result),
         BINCODE_CONFIG,
     )?;
     client
-        .post(task_location)
+        .post(task_location.as_str())
         .header(
             AUTHORIZATION,
             HeaderValue::from_str(&["Bearer ", &token].concat())?,
@@ -132,18 +132,18 @@ pub async fn finish_task(
     Ok(())
 }
 pub async fn abort_task(
-    client: Client,
-    task_location: Url,
-    token: String,
-    description_result: Option<String>,
-    payload_result: Vec<u8>,
+    client: &Client,
+    task_location: &Url,
+    token: &str,
+    description_result: Option<&str>,
+    payload_result: &[u8],
 ) -> Result<()> {
     let body = bincode::encode_to_vec(
         (0u8, TaskStatus::Aborted, description_result, payload_result),
         BINCODE_CONFIG,
     )?;
     client
-        .post(task_location)
+        .post(task_location.as_str())
         .header(
             AUTHORIZATION,
             HeaderValue::from_str(&["Bearer ", &token].concat())?,
@@ -154,10 +154,10 @@ pub async fn abort_task(
         .error_for_status()?;
     Ok(())
 }
-pub async fn get_task(client: Client, token: String, task_location: Url) -> Result<Task> {
+pub async fn get_task(client: &Client, token: &str, task_location: &Url) -> Result<Task> {
     Ok(bincode::decode_from_slice(
         &client
-            .get(task_location)
+            .get(task_location.as_str())
             .header(
                 AUTHORIZATION,
                 HeaderValue::from_str(&["Bearer ", &token].concat())?,
