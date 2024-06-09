@@ -27,7 +27,7 @@ pub async fn create_task(
         .post(url_tt_api.as_str())
         .header(
             AUTHORIZATION,
-            HeaderValue::from_str(&["Bearer ", &token].concat())?,
+            HeaderValue::from_str(&["Bearer ", token].concat())?,
         )
         .body(body)
         .send()
@@ -65,7 +65,7 @@ pub async fn create_simple_task(
         .post(url_tt_api.as_str())
         .header(
             AUTHORIZATION,
-            HeaderValue::from_str(&["Bearer ", &token].concat())?,
+            HeaderValue::from_str(&["Bearer ", token].concat())?,
         )
         .body(body)
         .send()
@@ -100,7 +100,7 @@ pub async fn update_task_progress(
         .post(task_location.as_str())
         .header(
             AUTHORIZATION,
-            HeaderValue::from_str(&["Bearer ", &token].concat())?,
+            HeaderValue::from_str(&["Bearer ", token].concat())?,
         )
         .body(body)
         .send()
@@ -123,7 +123,7 @@ pub async fn finish_task(
         .post(task_location.as_str())
         .header(
             AUTHORIZATION,
-            HeaderValue::from_str(&["Bearer ", &token].concat())?,
+            HeaderValue::from_str(&["Bearer ", token].concat())?,
         )
         .body(body)
         .send()
@@ -146,7 +146,7 @@ pub async fn abort_task(
         .post(task_location.as_str())
         .header(
             AUTHORIZATION,
-            HeaderValue::from_str(&["Bearer ", &token].concat())?,
+            HeaderValue::from_str(&["Bearer ", token].concat())?,
         )
         .body(body)
         .send()
@@ -160,7 +160,7 @@ pub async fn get_task(client: &Client, token: &str, task_location: &Url) -> Resu
             .get(task_location.as_str())
             .header(
                 AUTHORIZATION,
-                HeaderValue::from_str(&["Bearer ", &token].concat())?,
+                HeaderValue::from_str(&["Bearer ", token].concat())?,
             )
             .send()
             .await?
