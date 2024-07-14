@@ -6,7 +6,7 @@ use reqwest::{
 /// re-export for client app
 pub use tasks_tracker_common::{NewTask, Task, TaskStatus, BINCODE_CONFIG};
 use url::Url;
-mod error;
+pub mod error;
 pub struct ResponseNewTask {
     pub location: Url,
     pub view_token: String,
