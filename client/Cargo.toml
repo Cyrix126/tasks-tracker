@@ -9,4 +9,4 @@ uuid = {version="1.8", features= ["serde", "v4"], default-features = false }
 url = {version="2.5", features=["serde"]}
 reqwest = {version="0.12.4", default-features= false }
 tasks-tracker-common = {path = "../common", features=["client"]}
-anyhow = "1.0"
+thiserror = "1.0"

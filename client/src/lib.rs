@@ -1,4 +1,4 @@
-use anyhow::{Context, Result};
+use error::TaskClientError;
 use reqwest::{
     header::{HeaderValue, AUTHORIZATION, CONTENT_LOCATION},
     Client, Response,
@@ -6,7 +6,7 @@ use reqwest::{
 /// re-export for client app
 pub use tasks_tracker_common::{NewTask, Task, TaskStatus, BINCODE_CONFIG};
 use url::Url;
-const ERROR_MSG_HEADER_TO_STR: &str = "Header conversion to str failed";
+mod error;
 pub struct ResponseNewTask {
     pub location: Url,
     pub view_token: String,
@@ -21,7 +21,7 @@ pub async fn create_task(
     url_tt_api: &Url,
     new_task: &NewTask,
     token: &str,
-) -> Result<ResponseNewTask> {
+) -> Result<ResponseNewTask, TaskClientError> {
     let body = bincode::encode_to_vec(new_task, BINCODE_CONFIG)?;
     let rep = client
         .post(url_tt_api.as_str())
@@ -34,10 +34,7 @@ pub async fn create_task(
         .await?
         .error_for_status()?;
     Ok(ResponseNewTask {
-        location: rep_header_string(&rep, CONTENT_LOCATION.as_str())
-            .context(ERROR_MSG_HEADER_TO_STR)?
-            .parse()
-            .context("can't parse Content-Location Response Header to Url")?,
+        location: rep_header_string(&rep, CONTENT_LOCATION.as_str())?.parse()?,
         view_token: rep_header_string(&rep, "ViewToken")?,
         abort_token: rep_header_string(&rep, "AbortToken")?,
         update_token: rep_header_string(&rep, "UpdateToken")?,
@@ -49,7 +46,7 @@ pub async fn create_simple_task(
     task_scope: String,
     task_name: String,
     token: &str,
-) -> Result<ResponseNewTask> {
+) -> Result<ResponseNewTask, TaskClientError> {
     let body = bincode::encode_to_vec(
         NewTask {
             duration: 3600,
@@ -72,20 +69,17 @@ pub async fn create_simple_task(
         .await?
         .error_for_status()?;
     Ok(ResponseNewTask {
-        location: rep_header_string(&rep, CONTENT_LOCATION.as_str())
-            .context(ERROR_MSG_HEADER_TO_STR)?
-            .parse()
-            .context("can't parse Content-Location Response Header to Url")?,
+        location: rep_header_string(&rep, CONTENT_LOCATION.as_str())?.parse()?,
         view_token: rep_header_string(&rep, "ViewToken")?,
         abort_token: rep_header_string(&rep, "AbortToken")?,
         update_token: rep_header_string(&rep, "UpdateToken")?,
     })
 }
-fn rep_header_string(rep: &Response, key: &str) -> Result<String> {
+fn rep_header_string(rep: &Response, key: &str) -> Result<String, TaskClientError> {
     Ok(rep
         .headers()
         .get(key)
-        .context("The header key is not present in the response")?
+        .ok_or(TaskClientError::HeaderNotFound(key.to_string()))?
         .to_str()?
         .to_string())
 }
@@ -94,7 +88,7 @@ pub async fn update_task_progress(
     task_location: &Url,
     token: &str,
     new_progress: u8,
-) -> Result<()> {
+) -> Result<(), TaskClientError> {
     let body = bincode::encode_to_vec((new_progress, TaskStatus::Active), BINCODE_CONFIG)?;
     client
         .post(task_location.as_str())
@@ -114,7 +108,7 @@ pub async fn finish_task(
     token: &str,
     description_result: Option<&str>,
     payload_result: &[u8],
-) -> Result<()> {
+) -> Result<(), TaskClientError> {
     let body = bincode::encode_to_vec(
         (100u8, TaskStatus::Done, description_result, payload_result),
         BINCODE_CONFIG,
@@ -137,7 +131,7 @@ pub async fn abort_task(
     token: &str,
     description_result: Option<&str>,
     payload_result: &[u8],
-) -> Result<()> {
+) -> Result<(), TaskClientError> {
     let body = bincode::encode_to_vec(
         (0u8, TaskStatus::Aborted, description_result, payload_result),
         BINCODE_CONFIG,
@@ -154,7 +148,11 @@ pub async fn abort_task(
         .error_for_status()?;
     Ok(())
 }
-pub async fn get_task(client: &Client, token: &str, task_location: &Url) -> Result<Task> {
+pub async fn get_task(
+    client: &Client,
+    token: &str,
+    task_location: &Url,
+) -> Result<Task, TaskClientError> {
     Ok(bincode::decode_from_slice(
         &client
             .get(task_location.as_str())
