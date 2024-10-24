@@ -259,14 +259,6 @@ checksum = "1462739cb27611015575c0c11df5df7601141071f07518d56fcc1be504cbec97"
 [[package]]
 name = "client-plug-traits"
 version = "0.1.0"
-dependencies = [
- "cfg-if",
- "url",
-]
-
-[[package]]
-name = "client-plug-traits"
-version = "0.1.0"
 source = "git+https://github.com/Cyrix126/client-plug-traits#6cf6398b91a8d2d338d458e058618ee29d3c2bbd"
 dependencies = [
  "bincode",
@@ -982,7 +974,7 @@ name = "tasks-tracker-client"
 version = "0.2.0"
 dependencies = [
  "bincode",
- "client-plug-traits 0.1.0 (git+https://github.com/Cyrix126/client-plug-traits)",
+ "client-plug-traits",
  "derive_more",
  "reqwest",
  "tasks-tracker-common",
@@ -996,7 +988,7 @@ name = "tasks-tracker-common"
 version = "0.2.0"
 dependencies = [
  "bincode",
- "client-plug-traits 0.1.0",
+ "client-plug-traits",
  "rand",
  "url",
  "uuid",
