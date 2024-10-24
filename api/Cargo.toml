@@ -1,6 +1,6 @@
 [package]
 name = "task-tracker-rs-api"
-version = "0.1.0"
+version = "0.2.0"
 edition = "2021"
 
 [dependencies]
@@ -15,6 +15,3 @@ tasks-tracker-common = {path = "../common"}
 # macro feature enabled to get nicer error with #[debug_handler]
 axum = {version="0.7", default-features=false, features=["macros"]}
 axum-test = "14.9"
-
-
-

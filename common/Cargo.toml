@@ -1,6 +1,6 @@
 [package]
 name = "tasks-tracker-common"
-version = "0.1.0"
+version = "0.2.0"
 edition = "2021"
 
 [dependencies]
@@ -8,6 +8,7 @@ bincode = {version="2.0.0-rc.3", features=["serde"]}
 rand = { default-features = false, version = "0.8", features=["std_rng", "std"] }
 uuid = {version="1.8", features= ["serde", "v4"], default-features = false }
 url = {version="2.5", features=["serde"]}
+client-plug-traits = {path= "/home/lm/git/ecommerce/client-plug-traits", default-features=false, features=["tasks_tracker_api_client"]}
 
 [features]
 default=[]

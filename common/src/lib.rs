@@ -99,3 +99,26 @@ impl NewTask {
         }
     }
 }
+
+impl client_plug_traits::NewTask for NewTask {
+    fn duration(&self) -> u32 {
+        self.duration
+    }
+    fn scope(&self) -> &str {
+        &self.scope
+    }
+    fn name(&self) -> &str {
+        &self.name
+    }
+    fn description(&self) -> &str {
+        &self.description
+    }
+    fn push_address(&self) -> &[Url] {
+        &self.push_address
+    }
+    fn payload(&self) -> &[u8] {
+        &self.payload
+    }
+}
+
+impl client_plug_traits::Task for Task {}

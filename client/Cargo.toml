@@ -1,6 +1,6 @@
 [package]
 name = "tasks-tracker-client"
-version = "0.1.0"
+version = "0.2.0"
 edition = "2021"
 
 [dependencies]
@@ -10,3 +10,5 @@ url = {version="2.5", features=["serde"]}
 reqwest = {version="0.12.4", default-features= false }
 tasks-tracker-common = {path = "../common", features=["client"]}
 thiserror = "1.0"
+derive_more = {version="1.0", default-features=false, features=["deref"]}
+client-plug-traits = {version="0.1.0", git="https://github.com/Cyrix126/client-plug-traits", default-features=false, features=["tasks_tracker_api_client", "bincode"]}
