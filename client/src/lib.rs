@@ -18,7 +18,7 @@ pub struct ResponseNewTask {
 }
 pub struct ErrorNewTask {}
 
-#[derive(Deref)]
+#[derive(Deref, Clone)]
 pub struct Client {
     #[deref]
     client: ReqClient,
