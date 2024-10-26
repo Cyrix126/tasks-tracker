@@ -8,7 +8,6 @@ bincode = {version="2.0.0-rc.3", features=["serde"]}
 rand = { default-features = false, version = "0.8", features=["std_rng", "std"] }
 uuid = {version="1.8", features= ["serde", "v4"], default-features = false }
 url = {version="2.5", features=["serde"]}
-client-plug-traits = {git="https://github.com/Cyrix126/client-plug-traits", default-features=false, features=["tasks_tracker_api_client", "bincode"]}
 
 [features]
 default=[]
